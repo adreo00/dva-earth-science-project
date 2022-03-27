@@ -1,0 +1,8 @@
+jupyter
+numpy
+pandas
+sklearn
+EMD-signal
+matplotlib
+seaborn
+PyWavelets
