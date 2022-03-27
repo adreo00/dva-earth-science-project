@@ -29,7 +29,7 @@ from sklearn import metrics
 
 MicSigV1=pd.read_json ('/Users/lujuanwen/Downloads/MicSigV1/MicSigV1.json') #(1187,11)
 MicSigV1['Data_CIIT_6'] = np.zeros((MicSigV1.shape[0]))
-MicSigV1['Data_CIIT_6'] = MicSigV1['Data_CIIT'].astype('object')
+MicSigV1['Data_CIIT_6'] = MicSigV1['Data_CIIT_6'].astype('object')
 emd = EMD()
 #vis = Visualisation()
 #plt.plot(t,MicSigV1['Data'][1])
@@ -588,7 +588,7 @@ accuracy_score(y_test,yts_rf ) #0.8613445378151261
 
 #Kmeans 
 km_model = KMeans(n_clusters=5, random_state=42).fit_predict(X)
-confusion_matrix(y,ypred_km )
+confusion_matrix(y,km_model )
 #accuracy_score(y,ypred_km )  #0.2384161752316765
 
 
