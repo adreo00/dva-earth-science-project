@@ -6,3 +6,4 @@ EMD-signal
 matplotlib
 seaborn
 PyWavelets
+pyarrow
