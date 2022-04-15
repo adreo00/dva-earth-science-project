@@ -1,5 +1,4 @@
-// Variables
-let DATA_PATH = "..."
+let DATA_PATH = "../test.csv"
 
 let parse_date = d3.timeParse("%y/%m/%d")
 let format_date = d3.timeFormat("%Y-%m-%d")
@@ -149,7 +148,7 @@ function createFigure(figureData, SelectedValue){
       .data(figureData)
       .enter()
       .append("something")
-        .attr("cx", ...)
+        // .attr("cx", "..."
         .on("mouseover", function(event,d) {
             if (d[SelectedValue] !== 0) {
                 tooltip.transition()
