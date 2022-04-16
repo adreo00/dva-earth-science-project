@@ -1,28 +1,40 @@
-let DATA_PATH = "../test.csv"
+let DATA_PATH = "./classification_results.csv"
 
-let parse_date = d3.timeParse("%y/%m/%d")
-let format_date = d3.timeFormat("%Y-%m-%d")
+// The random day stuff was added to make the graph look better
+let parse_date = d3.timeParse("%Y-%m-%d")
+let format_date = d3.timeFormat("%Y-%m")
+function randDay() {
+  return Math.floor(Math.random() * 29);
+}
+function gen_date(Year, Month) {
+  return parse_date(Year+"-"+Month+"-"+randDay())
+}
 
-let width = 600
-    height = 400
-    margin = {top: 80, right: 20, bottom: 20, left: 50}
-
-let svg = d3.select("#figure")
+let margin = {top: 100, right: 50, bottom: 50, left: 50}
+    width = 900
+    height = 500
+    offset = 50
+    
+let svg = d3.select("body")
             .append("svg")
-                .attr("height", height)
-                .attr("width", width)
+                .attr("height", height+margin.top+margin.bottom)
+                .attr("width", width+margin.right+margin.left)
 
-let xScale = d3.scaleLinear()
-               .range([0, width])
+let xScale = d3.scaleTime()
+               .range([offset, width])
 
-let yScale = d3.scaleLinear()
-               .range([0, height])
+let yScale = d3.scalePoint()
+               .range([height*.8, 0])
+               .align(.5)
 
-let COLORS = ['rgba(166,206,227,.2)','rgba(31,120,180,.2)','rgba(178,223,138,.2)','rgba(51,160,44,.2)','rgba(251,154,153,.2)','rgba(227,26,28,.2)','rgba(253,191,111,.2)','rgba(255,127,0,.2)','rgba(202,178,214,.2)','rgba(106,61,154,.2)','rgba(255,255,153,.2)','rgba(177,89,40,.2)']
+let rScale = d3.scaleRadial()
+               .range([2, 10])
+
+let COLORS = ["rgba(166,206,227,.2)","rgba(31,120,180,.2)","rgba(178,223,138,.2)","rgba(51,160,44,.2)","rgba(251,154,153,.2)","rgba(227,26,28,.2)","rgba(253,191,111,.2)","rgba(255,127,0,.2)","rgba(202,178,214,.2)","rgba(106,61,154,.2)","rgba(255,255,153,.2)","rgba(177,89,40,.2)"]
 let color = d3.scaleOrdinal()
               .range(COLORS)
 
-let TOOLTIP_COLORS = ['rgba(166,206,227,.8)','rgba(31,120,180,.8)','rgba(178,223,138,.8)','rgba(51,160,44,.8)','rgba(251,154,153,.8)','rgba(227,26,28,.8)','rgba(253,191,111,.8)','rgba(255,127,0,.8)','rgba(202,178,214,.8)','rgba(106,61,154,.8)','rgba(255,255,153,.8)','rgba(177,89,40,.8)']
+let TOOLTIP_COLORS = ["rgba(166,206,227,.8)","rgba(31,120,180,.8)","rgba(178,223,138,.8)","rgba(51,160,44,.8)","rgba(251,154,153,.8)","rgba(227,26,28,.8)","rgba(253,191,111,.8)","rgba(255,127,0,.8)","rgba(202,178,214,.8)","rgba(106,61,154,.8)","rgba(255,255,153,.8)","rgba(177,89,40,.8)"]
 let tooltip_colors = d3.scaleOrdinal()
                        .range(TOOLTIP_COLORS)
 
@@ -58,10 +70,9 @@ d3.select("#container")
   .append("g")
     .attr("id", "y-axis")
 
-d3.select("#container") // Add other stuff as needed
+d3.select("#container")
   .append("g")
-    .attr("id", "REPLACE")
-
+    .attr("id", "circle")
 
 // Tooltips
 let tooltip = d3.select("body")
@@ -75,87 +86,96 @@ let legend_tooltip = d3.select("body")
                             .style("opacity", 0)
 
 // Main
-d3.dsv("\t", DATA_PATH, function(d){
+d3.dsv(",", DATA_PATH, function(d){
     return {
-        // parse data
+        "EQ": d.EQ,
+        "Date": gen_date(d.Year, d.Month),
+        "Type": d.Type,
+        "Duration": +d.Duration,
+        "Cleaning": d.Cleaning,
+        "Model": d.Model,
+        "Prediction": d.Prediction
     }
 }).then(function(data){
-    color.domain(Array.from(new Set(data.map(d => d.REPLACE_WITH_COLOR_MAPPING))))
-    tooltip_colors.domain(Array.from(new Set(data.map(d => d.REPLACE_WITH_COLOR_MAPPING))))
+    color.domain(Array.from(new Set(data.map(d => d.Prediction))))
+    tooltip_colors.domain(Array.from(new Set(data.map(d => d.Prediction))))
 
-    let options = [REPLACE_WITH_LIST_FOR_DROPDOWN]
+    let options = Array.from(new Set(data.map(d => d.Cleaning)))
     
     d3.select("#dropdown")
-      .selectAll('option')
+      .selectAll("option")
       .data(options)
       .enter()
-      .append('option')
+      .append("option")
       .text(d => d)
       .attr("value", d => d)
 
     d3.select("#dropdown")
       .on("change", function(d){
+        console.log(this)
         let selectedValue = d3.select(this).property("value")
-        let figureData = data.filter(d => d[SelectedValue] !== null) 
-        createFigure(figureData, SelectedValue)
+        let figureData = data.filter(d => d["Cleaning"] == selectedValue)
+        console.log(figureData)
+        createFigure(figureData, selectedValue)
       })
 
     // Create Default
-    let figureData = data.filter(d => d[REPLACE_WITH_DEFAULT_VALUE] !== null) 
-    createFigure(figureData, REPLACE_WITH_DEFAULT_VALUE)
+    let figureData = data.filter(d => d["Cleaning"] == "Raw") 
+    createFigure(figureData, "Raw")
     
 }).catch(function (error) {
     console.log(error)
 })
 
+
 function createFigure(figureData, SelectedValue){
 
     // Setup
-    xScale.domain([d3.min(figureData.map(d => d.REPLACE_WITH_X_MAPPING)), d3.max(figureData.map(d => d.REPLACE_WITH_X_MAPPING))+.05])
-    yScale.domain(d3.extent(figureData.map(d => d.REPLACE_WITH_Y_MAPPING)))
+    xScale.domain(d3.extent(figureData.map(d => d.Date)))
+    yScale.domain(Array.from(new Set(figureData.map(d => d.Model))))
+    rScale.domain(d3.extent(figureData.map(d => d.Duration)))
 
     // Enter
     d3.select("#main-title")
       .append("text")
-        .attr("x", width/2)
+        .attr("x", offset+width/2)
         .attr("y", -margin.top+20)
-        .text("Main Title")
+        .text("Earthquake Classification Performance")
 
     d3.select("#x-axis-label")
       .append("text")
-        .attr("x", width/2)
-        .attr("y", -margin.top+55)
-        .text("X-AXIS")
-
-    d3.select("#y-axis-label")
-      .append("text")
-        .attr("x", -height/2)
-        .attr("y", -margin.left+15)
-        .attr("transform", "rotate(-90)")
-        .text("Y-axis")
+        .attr("x", offset+width/2)
+        .attr("y", height+margin.bottom-15)
+        .text("Date of Earthquake")
 
     d3.select("#x-axis")
       .call(d3.axisBottom(xScale))
+      .attr('transform', 'translate(0,'+(height)+')')
 
     d3.select("#y-axis")
       .call(d3.axisLeft(yScale))
+      .call(g => g.select(".domain").remove())
 
-    d3.selectAll("REPLACE_WITH_ITEM")
+    d3.selectAll("circle")
       .remove()
 
-    d3.select("#something")
-      .selectAll("something")
+    d3.select("#circle")
+      .selectAll("circle")
       .data(figureData)
       .enter()
-      .append("something")
-        // .attr("cx", "..."
+      .append("circle")
+        .classed("circle", true)
+        .attr("cx", d => xScale(d.Date))
+        .attr("cy", d => yScale(d.Model))
+        .attr("fill", d => color(d.Prediction))
+        .attr("r", d => rScale(d.Duration))
         .on("mouseover", function(event,d) {
             if (d[SelectedValue] !== 0) {
                 tooltip.transition()
                        .duration(200)
                        .style("opacity", .9)
-                       .style("background", tooltip_colors(d.region))
-                tooltip.html(d["value1"] + "<br/>" + "value2: " + d["value2"] + "<br/>" + SelectedValue + ": " + d[SelectedValue])
+                       .style("background", tooltip_colors(d.Prediction))
+                tooltip.html(format_date(d["Date"]) + "<br/>" + "True Type: " + d["Type"] + "<br/>" + "Predicted Type: " + d["Prediction"])
                        .style("left", (event.pageX) + "px")
                        .style("top", (event.pageY - 28) + "px")
             }
@@ -167,4 +187,24 @@ function createFigure(figureData, SelectedValue){
                        .style("opacity", 0)
             }
         })
+
+      let simulation = d3.forceSimulation(figureData)
+                         .force("x", d3.forceX(d => xScale(d.Date))
+                                       .strength(.5))
+                         .force("y", d3.forceY(d => yScale(d.Model))
+                                       .strength(1))
+                         .force("collide", d3.forceCollide(d => rScale(d.Duration)))
+                         .alphaDecay(0)
+                         .alpha(0.3)
+                         .on("tick", tick)
+
+      function tick() {
+          d3.selectAll("circle")
+              .attr("cx", d => d.x)
+              .attr("cy", d => d.y)
+      }
+
+      let init_decay = setTimeout(function () {simulation.alphaDecay(0.1)}, 500)
 }
+
+
