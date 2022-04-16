@@ -1,0 +1,25 @@
+.title {
+	text-anchor: middle;
+}
+
+.main {
+	font-weight: 70;
+	font-size: x-large;
+}
+
+.sub {
+	font-weight: 50;
+	font-size: medium;
+}
+
+.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 100px;
+  height: 36px;
+  padding: 8px;
+  font: 12px sans-serif;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
