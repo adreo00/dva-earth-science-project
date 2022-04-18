@@ -9,9 +9,9 @@ function gen_date(Year, Month) {
   return parse_date(Year+"-"+Month+"-"+randDay())
 }
 
-let margin = {top: 100, right: 50, bottom: 50, left: 50}
+let margin = {top: 100, right: 50, bottom: 40, left: 50}
     width = 900
-    height = 500
+    height = 550
     offset = 50
     
 let svg = d3.select("body")
@@ -105,7 +105,7 @@ d3.dsv(",", DATA_PATH, function(d){
         "Cleaning": d.Cleaning,
         "Model": d.Model,
         "Prediction": d.Prediction,
-        "Correct": +d.Correct
+        "Correct": +d["Correct Prediction"]
     }
 }).then(function(data){
     color.domain(Array.from(new Set(data.map(d => d.Prediction))))
@@ -172,14 +172,14 @@ function createFigure(figureData, SelectedValue){
         .append("text")
           .classed("update", true)
           .attr("x", offset+width/2)
-          .attr("y", height-15)
+          .attr("y", height)
           .text("Classification Accuracy")
 
       d3.select("#x-axis")
         .call(d3.axisBottom(binaryScale))
         .attr('transform', 'translate(0,'+(height-margin.bottom)+')')
 
-      d3.selectAll("circle")
+       d3.selectAll("circle")
         .remove()
 
       d3.select("#circle")
@@ -214,10 +214,10 @@ function createFigure(figureData, SelectedValue){
 
         let simulation = d3.forceSimulation(figureData)
                            .force("x", d3.forceX(d => binaryScale(d.Correct))
-                                         .strength(.3))
+                                         .strength(.34))
                            .force("y", d3.forceY(d => yScale(d.Model))
                                          .strength(1))
-                           .force("collide", d3.forceCollide(d => rScale(d.Duration)))
+                           .force("collide", d3.forceCollide(d => rScale(d.Duration)*.8))
                            .alphaDecay(0)
                            .alpha(0.3)
                            .on("tick", tick)
@@ -235,7 +235,7 @@ function createFigure(figureData, SelectedValue){
           .append("text")
             .classed("update", true)
             .attr("x", offset+width/2)
-            .attr("y", height-15)
+            .attr("y", height)
             .text("Date of Earthquake")
 
         d3.select("#x-axis")
