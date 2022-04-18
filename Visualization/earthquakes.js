@@ -9,6 +9,14 @@ function gen_date(Year, Month) {
   return parse_date(Year+"-"+Month+"-"+randDay())
 }
 
+function parse_pred(pred) {
+  if(pred=="True") {
+    return 1
+  } else {
+    return 0
+  }
+}
+
 let margin = {top: 100, right: 50, bottom: 40, left: 50}
     width = 900
     height = 550
@@ -105,7 +113,7 @@ d3.dsv(",", DATA_PATH, function(d){
         "Cleaning": d.Cleaning,
         "Model": d.Model,
         "Prediction": d.Prediction,
-        "Correct": +d["Correct Prediction"]
+        "Correct": parse_pred(d["Correct Prediction"])
     }
 }).then(function(data){
     color.domain(Array.from(new Set(data.map(d => d.Prediction))))
