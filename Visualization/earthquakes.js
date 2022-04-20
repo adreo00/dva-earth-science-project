@@ -42,13 +42,20 @@ let yScale = d3.scalePoint()
 let rScale = d3.scaleRadial()
                .range([2, 10])
 
-let COLORS = ["rgba(31,120,180,.5)","rgba(178,223,138,.5)","rgba(51,160,44,.5)","rgba(227,26,28,.5)","rgba(253,191,111,.5)","rgba(255,127,0,.5)","rgba(202,178,214,.5)","rgba(106,61,154,.5)","rgba(255,255,153,.2)","rgba(177,89,40,.5)"]
+let legendScale = d3.scaleLinear()
+                    .domain([1, 5])
+                    .range([(offset+width)*.2, (offset+width)*.8])
+
+let eqs = ['LP', 'Regional', 'HB', 'Icequake', 'VT']
+let COLORS = ["rgba(255,217,47,.5)", "rgba(252,141,98,.5)", "rgba(141,160,203,.5)", "rgba(231,138,195,.5)", "rgba(102,194,165,.5)"]
 let color = d3.scaleOrdinal()
               .range(COLORS)
+              .domain(eqs)
 
-let TOOLTIP_COLORS = ["rgba(31,120,180,.8)","rgba(178,223,138,.8)","rgba(51,160,44,.8)","rgba(227,26,28,.8)","rgba(253,191,111,.8)","rgba(255,127,0,.8)","rgba(202,178,214,.8)","rgba(106,61,154,.8)","rgba(255,255,153,.8)","rgba(177,89,40,.8)"]
+let TOOLTIP_COLORS = ["rgba(255,217,47,.8)", "rgba(252,141,98,.8)", "rgba(141,160,203,.8)", "rgba(231,138,195,.8)", "rgba(102,194,165,.8)"]
 let tooltip_colors = d3.scaleOrdinal()
                        .range(TOOLTIP_COLORS)
+                       .domain(eqs)
 
 let BIN_COLORS = ["rgba(161,217,155,1)", "rgba(240,240,240,1)"]
 let binColors = d3.scaleOrdinal()
@@ -92,6 +99,10 @@ d3.select("#container")
   .append("g")
     .attr("id", "circle")
 
+d3.select("#container")
+  .append("g")
+    .attr("id", "legend-text")
+
 // Tooltips
 let tooltip = d3.select("body")
                 .append("div")
@@ -116,9 +127,6 @@ d3.dsv(",", DATA_PATH, function(d){
         "Correct": parse_pred(d["Correct Prediction"])
     }
 }).then(function(data){
-    color.domain(Array.from(new Set(data.map(d => d.Prediction))))
-    tooltip_colors.domain(Array.from(new Set(data.map(d => d.Prediction))))
-
     let options = Array.from(new Set(data.map(d => d.Cleaning)))
     
     d3.select("#dropdown")
@@ -161,6 +169,20 @@ d3.dsv(",", DATA_PATH, function(d){
     d3.select("#y-axis")
       .call(d3.axisLeft(yScale))
       .call(g => g.select(".domain").remove())
+
+    d3.select("#legend-text")
+       .selectAll("legend-text")
+       .data(eqs)
+       .enter()
+       .append("text")
+           .attr("x", function(d, i){
+              return legendScale(i+1)
+           })
+           .attr("y", 570)
+           .text(d => d)
+           .attr("fill", d => tooltip_colors(d))
+           .attr("font-size", 12)
+           .attr("text-anchor", "center")
     
 }).catch(function (error) {
     console.log(error)
@@ -182,6 +204,7 @@ function createFigure(figureData, SelectedValue){
           .attr("x", offset+width/2)
           .attr("y", height)
           .text("Classification Accuracy")
+          .attr("text-anchor", "center")
 
       d3.select("#x-axis")
         .call(d3.axisBottom(binaryScale))
@@ -200,6 +223,7 @@ function createFigure(figureData, SelectedValue){
           .attr("cy", d => yScale(d.Model))
           .attr("fill", d => binColors(d.Correct))
           .attr("r", d => rScale(d.Duration))
+          .attr("data-legend",function(d) { return d.Correct})
           .on("mouseover", function(event,d) {
               if (d[SelectedValue] !== 0) {
                   tooltip.transition()
@@ -245,6 +269,7 @@ function createFigure(figureData, SelectedValue){
             .attr("x", offset+width/2)
             .attr("y", height)
             .text("Date of Earthquake")
+            .attr("text-anchor", "center")
 
         d3.select("#x-axis")
           .call(d3.axisBottom(xScale))
@@ -263,6 +288,7 @@ function createFigure(figureData, SelectedValue){
             .attr("cy", d => yScale(d.Model))
             .attr("fill", d => color(d.Prediction))
             .attr("r", d => rScale(d.Duration))
+            .attr("data-legend",function(d) { return d.Type})
             .on("mouseover", function(event,d) {
                 if (d[SelectedValue] !== 0) {
                     tooltip.transition()
