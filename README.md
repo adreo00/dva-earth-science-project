@@ -8,12 +8,16 @@
 
 ## Fetch Data
 
-TODO: Instructions here on how to download data if not included in github repo 
-- Download data here: https://gtvault-my.sharepoint.com/:f:/g/personal/adreo3_gatech_edu/EqgTY5X4p2dAq1ZPubGyzn4BoEblaknok6zGJ00mgi01VQ?e=0PI207
+- Download data here: https://gtvault-my.sharepoint.com/:f:/g/personal/adreo3_gatech_edu/EqgTY5X4p2dAq1ZPubGyzn4B6-Q5IhVFUCOA8gAH-je00g?e=aSVPCq
 - save the following files to `data/` directory of repository
   - `MicSigV1.json`
   - (optional) `clean_data.parquet`
-    - this allows you to skip the pre-proecessing
+    - this file allows you to skip the pre-proecessing notebook (`1etl.ipynb`), and proceed directly to `2model.ipynb`
 
-## Run notebook 
+## Run notebooks
 run: `jupyter notebook` or run the notebook using and IDE like (VSCode)[https://code.visualstudio.com/docs/datascience/jupyter-notebooks]
+
+## Explanation of notebooks
+
+- `1etl.ipynb`: begins with `MicSigV1.json`. Performs basic tranformation and decomposition on raw seismic data
+- `2model.ipynb`: begins with `clean_data.parquet`, builds several different earthquake classification models, and compares performance of each.
