@@ -21,3 +21,8 @@ run: `jupyter notebook` or run the notebook using and IDE like (VSCode)[https://
 
 - `1etl.ipynb`: begins with `MicSigV1.json`. Performs basic tranformation and decomposition on raw seismic data
 - `2model.ipynb`: begins with `clean_data.parquet`, builds several different earthquake classification models, and compares performance of each.
+
+## Run Visualizations
+- to begin serving the visual, run the following command
+  -  `python -m http.server`
+- next, access the visual in your web browser. By default, this is accessible at:`http://localhost:8000/Visualization/earthquakes.html`
