@@ -23,6 +23,7 @@ run: `jupyter notebook` or run the notebook using and IDE like (VSCode)[https://
 - `2model.ipynb`: begins with `clean_data.parquet`, builds several different earthquake classification models, and compares performance of each.
 
 ## Run Visualizations
+- `./Visualization/classification_results_SMOTE.csv` (generated from `2model.ipynb`) is required to run the visual
 - to begin serving the visual, run the following command
-  -  `python -m http.server`
+  -  `python -m http.server 8000 --directory ./Visualization/`
 - next, access the visual in your web browser. By default, this is accessible at:`http://localhost:8000/Visualization/earthquakes.html`

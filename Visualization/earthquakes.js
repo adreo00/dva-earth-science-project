@@ -1,4 +1,4 @@
-let DATA_PATH = "./classification_results.csv"
+let DATA_PATH = "./classification_results_SMOTE.csv"
 
 let parse_date = d3.timeParse("%Y-%m-%d")
 let format_date = d3.timeFormat("%Y-%m")
