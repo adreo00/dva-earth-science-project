@@ -1,6 +1,6 @@
 # dva-earth-science-project
 
-##Setup Video
+## Setup Video
 You can view a walkthrough of these steps here: https://youtu.be/BTcMMdOvZJo
 
 ## Setup
