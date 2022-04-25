@@ -1,7 +1,10 @@
 # dva-earth-science-project
 
-## Setup
+##Setup Video
+You can view a walkthrough of these steps here: https://youtu.be/BTcMMdOvZJo
 
+## Setup
+- Install conda: https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html
 - create new conda environment using `conda create --name dva-earth-science jupyter python=3.9`
 - active conda environment: `conda activate dva-earth-science`
 - run `pip install -r requirements.txt`
